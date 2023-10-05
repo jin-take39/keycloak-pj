@@ -1,0 +1,66 @@
+version: '3'
+
+services:
+  ispan:
+    image: quay.io/infinispan/server:latest
+    container_name: ispan
+    hostname: ispan
+    restart: always
+    environment:
+      - USER=admin
+      - PASS=password
+    command:
+      - --cluster-name=ISPN
+    ports:
+      - "11222:11222"
+    networks:
+      keycloak_ispan_net:
+        ipv4_address: 172.10.0.2
+
+  keycloak:
+    build:
+      context: .
+      dockerfile: ./keycloak/Dockerfile
+    container_name: keycloak
+    tty: true
+    stdin_open: true
+    restart: always
+    user: $UID:$GID
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    volumes:
+      - ./keycloak/conf:/opt/keycloak/conf
+      - ./keycloak/ssl:/opt/keycloak/ssl
+    command:
+      - "start"
+    ports:
+      - 8080:8080
+      - 8443:8443
+    networks:
+      keycloak_ispan_net:
+        ipv4_address: 172.10.0.3
+
+  keycloak-db:
+    image: postgres:latest
+    container_name: keycloak-db
+    environment:
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak
+      POSTGRES_DB: keycloak
+    ports:
+      - "55432:5432"
+    volumes:
+      - ./postgres/data:/var/lib/postgresql/data:z
+    networks:
+      keycloak_ispan_net:
+        ipv4_address: 172.10.0.4
+
+networks:
+
+  keycloak_ispan_net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.10.0.0/24
