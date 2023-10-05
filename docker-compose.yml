@@ -51,7 +51,7 @@ services:
     ports:
       - "55432:5432"
     volumes:
-      - ./postgres/data:/var/lib/postgresql/data:z
+      - ./postgres/data:/var/lib/postgresql/data
     networks:
       keycloak_ispan_net:
         ipv4_address: 172.10.0.4
