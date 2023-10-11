@@ -2,13 +2,20 @@ version: '3'
 
 services:
   ispan:
+    build:
+      context: .
+    tty: true
+    stdin_open: true
     image: quay.io/infinispan/server:latest
     container_name: ispan
     hostname: ispan
     restart: always
+    user: $JBOSS_UID:$JBOSS_GID
     environment:
       - USER=admin
       - PASS=password
+    volumes:
+      - ./ispan/ispan-conf/infinispan.xml:/opt/infinispan/server/conf/infinispan.xml:ro
     command:
       - --cluster-name=ISPN
     ports:
