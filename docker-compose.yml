@@ -1,21 +1,45 @@
 version: '3'
 
 services:
-  ispan:
-    image: quay.io/infinispan/server:latest
-    container_name: ispan
-    hostname: ispan
+  ispan1:
+    # image: quay.io/infinispan/server:latest
+    image: infinispan/server:latest
+    container_name: ispan1
+    hostname: ispan1
     restart: always
+    user: $JBOSS_UID:$JBOSS_GID
     environment:
       - USER=admin
       - PASS=password
-    command:
-      - --cluster-name=ISPN
+    # command:
+    #   - --cluster-name=ISPN
     ports:
       - "11222:11222"
+    volumes:
+      - "./ispan-conf/ispan1/infinispan.xml:/opt/infinispan/server/conf/infinispan.xml"
     networks:
       keycloak_ispan_net:
-        ipv4_address: 172.10.0.2
+        ipv4_address: 172.10.0.98
+
+  ispan2:
+    # image: quay.io/infinispan/server:latest
+    image: infinispan/server:latest
+    container_name: ispan2
+    hostname: ispan2
+    restart: always
+    user: $JBOSS_UID:$JBOSS_GID
+    environment:
+      - USER=admin
+      - PASS=password
+    # command:
+    #   - --cluster-name=ISPN
+    ports:
+      - "11223:11222"
+    volumes:
+      - "./ispan-conf/ispan2/infinispan.xml:/opt/infinispan/server/conf/infinispan.xml"
+    networks:
+      keycloak_ispan_net:
+        ipv4_address: 172.10.0.99
 
   keycloak:
     build:
@@ -29,6 +53,7 @@ services:
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
+    # env_file: ./.env.keycloak
     volumes:
       - ./keycloak/conf:/opt/keycloak/conf
       - ./keycloak/ssl:/opt/keycloak/ssl
@@ -37,6 +62,7 @@ services:
     ports:
       - 8080:8080
       - 8443:8443
+      - 7800:7800
     networks:
       keycloak_ispan_net:
         ipv4_address: 172.10.0.3
