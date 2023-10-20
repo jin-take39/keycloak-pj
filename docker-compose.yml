@@ -16,7 +16,7 @@ services:
     ports:
       - "11222:11222"
     volumes:
-      - "./ispan-conf/ispan1/infinispan.xml:/opt/infinispan/server/conf/infinispan.xml"
+      - "./ispan-conf/ispan1-14/infinispan.xml:/opt/infinispan/server/conf/infinispan.xml"
     networks:
       keycloak_ispan_net:
         ipv4_address: 172.10.0.98
@@ -36,7 +36,7 @@ services:
     ports:
       - "11223:11222"
     volumes:
-      - "./ispan-conf/ispan2/infinispan.xml:/opt/infinispan/server/conf/infinispan.xml"
+      - "./ispan-conf/ispan2-14/infinispan.xml:/opt/infinispan/server/conf/infinispan.xml"
     networks:
       keycloak_ispan_net:
         ipv4_address: 172.10.0.99
