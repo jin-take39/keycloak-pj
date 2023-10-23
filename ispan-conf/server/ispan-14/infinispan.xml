@@ -13,7 +13,14 @@
          <locking concurrency-level="1000" acquire-timeout="15000" striping="false"/>
          <state-transfer timeout="60000"/>
       </distributed-cache>
-      
+
+      <replicated-cache name="ispan1-local-mycache">
+         <encoding media-type="application/x-jboss-marshalling"/>
+         <locking concurrency-level="1000" acquire-timeout="15000" striping="false"/>
+         <state-transfer timeout="60000"/>
+         <expiration lifespan="-1"/>
+      </replicated-cache>
+
       <security>
          <authorization/>
       </security>

@@ -32,6 +32,30 @@
 
       </distributed-cache>
 
+      <replicated-cache name="ispan1-local-mycache" mode="SYNC" remote-timeout="17500" statistics="true">
+         <encoding media-type="application/x-jboss-marshalling"/>
+         <locking concurrency-level="1000" acquire-timeout="15000" striping="false"/>
+         <state-transfer timeout="60000"/>
+
+			<remote-store xmlns="urn:infinispan:config:store:remote:14.0"
+							cache="ispan1-local-mycache"
+							purge="false"
+							preload="false"
+							segmented="false"
+							shared="true"
+							raw-values="true"
+							>
+				<remote-server host="172.10.0.98" port="11222" />
+               <security>
+                  <authentication server-name="infinispan">
+                     <digest username="admin" password="password" realm="default"/>
+                  </authentication>
+               </security>
+				   <connection-pool max-active="10" exhausted-action="CREATE_NEW" />
+			</remote-store>
+
+      </replicated-cache>
+
       <security>
          <authorization/>
       </security>
