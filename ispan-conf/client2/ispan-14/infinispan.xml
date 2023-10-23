@@ -5,15 +5,16 @@
       xmlns="urn:infinispan:config:14.0"
       xmlns:server="urn:infinispan:server:14.0">
 
-   <cache-container name="keycloak2" statistics="true">
-      <transport cluster="${infinispan.cluster.name:cluster}" stack="${infinispan.cluster.stack:udp}" node-name="${infinispan.node.name:}"/>
+   <cache-container name="keycloak-client2" statistics="true">
+      <transport cluster="mycluster" stack="${infinispan.cluster.stack:udp}" node-name="${infinispan.node.name:}"/>
 
-      <distributed-cache name="local-mycache"
-                  statistics="true">
-         <encoding media-type="application/x-protostream"/>
+      <distributed-cache name="ispan1-mycache" mode="SYNC" remote-timeout="17500" statistics="true">
+         <encoding media-type="application/x-jboss-marshalling"/>
+         <locking concurrency-level="1000" acquire-timeout="15000" striping="false"/>
+         <state-transfer timeout="60000"/>
 
 			<remote-store xmlns="urn:infinispan:config:store:remote:14.0"
-							cache="local-mycache"
+							cache="ispan1-mycache"
 							purge="false"
 							preload="false"
 							segmented="false"
@@ -21,16 +22,15 @@
 							raw-values="true"
 							>
 				<remote-server host="172.10.0.98" port="11222" />
-				<security>
-					<authentication server-name="infinispan">
-						<digest username="admin" password="password" realm="default"/>
-					</authentication>
-				</security>
-            <connection-pool max-active="10"
-                           exhausted-action="CREATE_NEW" />
+               <security>
+                  <authentication server-name="infinispan">
+                     <digest username="admin" password="password" realm="default"/>
+                  </authentication>
+               </security>
+				   <connection-pool max-active="10" exhausted-action="CREATE_NEW" />
 			</remote-store>
-      </distributed-cache>
 
+      </distributed-cache>
 
       <security>
          <authorization/>

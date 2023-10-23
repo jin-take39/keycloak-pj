@@ -5,22 +5,33 @@
       xmlns="urn:infinispan:config:14.0"
       xmlns:server="urn:infinispan:server:14.0">
 
-   <cache-container name="keycloak" statistics="true">
-      <transport cluster="${infinispan.cluster.name:cluster}" stack="${infinispan.cluster.stack:udp}" node-name="${infinispan.node.name:}"/>
+   <cache-container name="keycloak-client1" statistics="true">
+      <transport cluster="mycluster" stack="${infinispan.cluster.stack:udp}" node-name="${infinispan.node.name:}"/>
 
-      <replicated-cache name="work">
+      <distributed-cache name="ispan1-mycache" mode="SYNC" remote-timeout="17500" statistics="true">
          <encoding media-type="application/x-jboss-marshalling"/>
-      </replicated-cache>
-      
-      <local-cache name="local-mycache"
-                  statistics="true">
-         <encoding media-type="application/x-jboss-marshalling"/>
-      </local-cache>
+         <locking concurrency-level="1000" acquire-timeout="15000" striping="false"/>
+         <state-transfer timeout="60000"/>
 
-      <distributed-cache name="mycache">
-         <encoding media-type="application/x-jboss-marshalling"/>
+			<remote-store xmlns="urn:infinispan:config:store:remote:14.0"
+							cache="ispan1-mycache"
+							purge="false"
+							preload="false"
+							segmented="false"
+							shared="true"
+							raw-values="true"
+							>
+				<remote-server host="172.10.0.98" port="11222" />
+               <security>
+                  <authentication server-name="infinispan">
+                     <digest username="admin" password="password" realm="default"/>
+                  </authentication>
+               </security>
+				   <connection-pool max-active="10" exhausted-action="CREATE_NEW" />
+			</remote-store>
+
       </distributed-cache>
-      
+
       <security>
          <authorization/>
       </security>
@@ -34,7 +45,7 @@
       </interfaces>
 
       <socket-bindings default-interface="public" port-offset="${infinispan.socket.binding.port-offset:0}">
-         <socket-binding name="default" port="${infinispan.bind.port:11222}"/>
+         <socket-binding name="default" port="${infinispan.bind.port:11223}"/>
          <socket-binding name="memcached" port="11221"/>
       </socket-bindings>
 

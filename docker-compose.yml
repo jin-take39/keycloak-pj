@@ -1,11 +1,11 @@
 version: '3'
 
 services:
-  ispan1:
+  ispan_server:
     # image: quay.io/infinispan/server:latest
     image: infinispan/server:latest
-    container_name: ispan1
-    hostname: ispan1
+    container_name: ispan_server
+    hostname: ispan_server
     restart: always
     user: $JBOSS_UID:$JBOSS_GID
     environment:
@@ -16,16 +16,16 @@ services:
     ports:
       - "11222:11222"
     volumes:
-      - "./ispan-conf/ispan1-14/infinispan.xml:/opt/infinispan/server/conf/infinispan.xml"
+      - "./ispan-conf/server/ispan-14/infinispan.xml:/opt/infinispan/server/conf/infinispan.xml"
     networks:
       keycloak_ispan_net:
         ipv4_address: 172.10.0.98
 
-  ispan2:
+  ispan_client1:
     # image: quay.io/infinispan/server:latest
     image: infinispan/server:latest
-    container_name: ispan2
-    hostname: ispan2
+    container_name: ispan_client1
+    hostname: ispan_client1
     restart: always
     user: $JBOSS_UID:$JBOSS_GID
     environment:
@@ -36,10 +36,50 @@ services:
     ports:
       - "11223:11222"
     volumes:
-      - "./ispan-conf/ispan2-14/infinispan.xml:/opt/infinispan/server/conf/infinispan.xml"
+      - "./ispan-conf/client1/ispan-14/infinispan.xml:/opt/infinispan/server/conf/infinispan.xml"
     networks:
       keycloak_ispan_net:
         ipv4_address: 172.10.0.99
+
+  ispan_client2:
+    # image: quay.io/infinispan/server:latest
+    image: infinispan/server:latest
+    container_name: ispan_client2
+    hostname: ispan_client2
+    restart: always
+    user: $JBOSS_UID:$JBOSS_GID
+    environment:
+      - USER=admin
+      - PASS=password
+    # command:
+    #   - --cluster-name=ISPN
+    ports:
+      - "11224:11222"
+    volumes:
+      - "./ispan-conf/client2/ispan-14/infinispan.xml:/opt/infinispan/server/conf/infinispan.xml"
+    networks:
+      keycloak_ispan_net:
+        ipv4_address: 172.10.0.100
+
+  ispan_client3:
+    # image: quay.io/infinispan/server:latest
+    image: infinispan/server:latest
+    container_name: ispan_client3
+    hostname: ispan_client3
+    restart: always
+    user: $JBOSS_UID:$JBOSS_GID
+    environment:
+      - USER=admin
+      - PASS=password
+    # command:
+    #   - --cluster-name=ISPN
+    ports:
+      - "11225:11222"
+    volumes:
+      - "./ispan-conf/client3/ispan-14/infinispan.xml:/opt/infinispan/server/conf/infinispan.xml"
+    networks:
+      keycloak_ispan_net:
+        ipv4_address: 172.10.0.101
 
   keycloak:
     build:
